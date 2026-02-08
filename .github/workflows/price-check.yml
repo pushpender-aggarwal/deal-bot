@@ -1,0 +1,40 @@
+# This workflow runs price_monitor.py every 6 hours
+# It checks product prices and sends Telegram alerts for deals
+
+name: Price Check
+
+# When to run
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # Every 6 hours (12am, 6am, 12pm, 6pm UTC)
+  workflow_dispatch:         # Allow manual trigger from GitHub UI
+
+jobs:
+  check-prices:
+    runs-on: ubuntu-latest   # Free Linux server from GitHub
+
+    steps:
+      # Step 1: Download your code onto the server
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Install Python 3.12
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # Step 3: Install uv package manager
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      # Step 4: Install dependencies from pyproject.toml
+      - name: Install dependencies
+        run: uv sync
+
+      # Step 5: Run the price monitor script
+      - name: Check prices
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: uv run python price_monitor.py

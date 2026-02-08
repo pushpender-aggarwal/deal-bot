@@ -1,0 +1,18 @@
+{
+  "products": [
+    {
+      "name": "BenQ MA270U 4K Monitor",
+      "target_price": 40000,
+      "urls": [
+        {
+          "platform": "amazon",
+          "url": "https://www.amazon.in/BenQ-MA270U-3840x2160-Monitor-Brightness/dp/B0DFB26FD8?th=1"
+        },
+        {
+          "platform": "flipkart",
+          "url": "https://www.flipkart.com/benq-ma270u-68-58-cm-27-inch-4k-ultra-hd-led-backlit-ips-panel-p3-color-gamut-dual-usb-c-90w-pd-usb-hub-brightness-volume-control-display-pilot2-0-integrated-mac-controls-height-adjustable-stand-monitor-ma270u/p/itm48c5fd71ca212"
+        }
+      ]
+    }
+  ]
+}

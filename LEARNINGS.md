@@ -271,6 +271,24 @@ git config --local user.email "your@email.com"
 3. Secrets loaded from `.env` file
 4. Direct requests work (residential home IP)
 
+### Testing with Telegram Locally (Without .env file)
+If you want to test Telegram notifications quickly without creating a `.env` file:
+
+```bash
+TELEGRAM_BOT_TOKEN="your-bot-token" TELEGRAM_CHAT_ID="your-chat-id" uv run python price_monitor.py
+```
+
+**How it works:**
+- Sets environment variables inline (only for this command)
+- Useful for quick testing or one-off runs
+- Values available to Python via `os.environ.get()`
+- Secrets are NOT saved (disappear after command finishes)
+
+**When to use:**
+- Quick testing of Telegram integration
+- Running in environments where `.env` file doesn't exist
+- Temporary overrides for specific runs
+
 ### GitHub Actions Deployment
 1. Push code to GitHub
 2. Add secrets in repo settings (Settings → Secrets → Actions)

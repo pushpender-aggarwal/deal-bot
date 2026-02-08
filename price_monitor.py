@@ -3,18 +3,30 @@ import os
 import re
 import smtplib
 from email.mime.text import MIMEText
+from urllib.parse import urlencode
 import requests
-import cloudscraper
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 
 load_dotenv()  # Load environment variables from .env file
 
-# Browser-like headers so Amazon/Flipkart don't block us
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
-    "Accept-Language": "en-US,en;q=0.9",
-}
+SCRAPEOPS_API_KEY = os.environ.get("SCRAPEOPS_API_KEY")
+
+
+def fetch_page(url):
+    """Fetch a page via ScrapeOps proxy to avoid blocks from cloud servers"""
+    if SCRAPEOPS_API_KEY:
+        # Route through ScrapeOps proxy (for GitHub Actions / cloud servers)
+        params = urlencode({"api_key": SCRAPEOPS_API_KEY, "url": url})
+        response = requests.get(f"https://proxy.scrapeops.io/v1/?{params}")
+    else:
+        # Direct request (for local development)
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+            "Accept-Language": "en-US,en;q=0.9",
+        }
+        response = requests.get(url, headers=headers)
+    return response
 
 
 def load_config():
@@ -25,7 +37,7 @@ def load_config():
 
 def get_price_amazon(url):
     """Extract price from an Amazon India product page"""
-    response = requests.get(url, headers=HEADERS)
+    response = fetch_page(url)
     soup = BeautifulSoup(response.text, "html.parser")
 
     # Amazon shows price in a span with class "a-price-whole"
@@ -39,8 +51,7 @@ def get_price_amazon(url):
 
 def get_price_flipkart(url):
     """Extract price from a Flipkart product page"""
-    scraper = cloudscraper.create_scraper()
-    response = scraper.get(url)
+    response = fetch_page(url)
 
     if response.status_code != 200:
         print(f"  Flipkart returned status {response.status_code}")
